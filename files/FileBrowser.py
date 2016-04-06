@@ -11,8 +11,10 @@ class FileBrowser:
 
     def list_file(self):
         os.chdir(self.m_folder_path)  # change directory
-        for file in glob.glob("*[^.txt]"):  # list all file in directory
-            if(os.path.isdir(file)):
+        for file in glob.glob("*"):  # list all file in directory
+            if file == "database.txt":
+                continue
+            if os.path.isdir(file):
                 self.m_list_directory.append(os.path.join(self.m_folder_path, file))
             else:
                 self.m_list_file.append(os.path.join(self.m_folder_path, file))
