@@ -1,40 +1,98 @@
+import errno
+from exifread import IfdTag
+
+from files.FileBrowser import FileBrowser
+from files.FileSystemManager import FileSystemManager
 from files.MD5Encoder import MD5Encoder
+from image.ExifReader import ExifReader
+
 import os
 import sys
+import imghdr
 
 root_path = sys.argv[1]
+fsManager = FileSystemManager(root_path)
+browser = FileBrowser(fsManager.root_path)
+md5_encryptor = MD5Encoder(fsManager.root_path)
+exif_reader = ExifReader()
 
-# init database.txt in root_path
-md5enc = MD5Encoder(root_path)
 
-print('walk_dir = ' + root_path+"\n")
+def manageMD5(file_path):
+    print(file_path)
+    md5_encryptor.init_file(file_path)
+    # if it's a duplicate or the database itself then there is no reason to continue
+    if md5_encryptor.is_file_already_present():
+        print(md5_encryptor.m_hashed_value + " already present")
+        return False
+    md5_encryptor.add_hash_in_database()
+    print(md5_encryptor.m_hashed_value + " added")
+    return True
 
-# If your current working directory may change during script execution, it's recommended to
-# immediately convert program arguments to an absolute path. Then the variable root below will
-# be an absolute path as well. Example:
-# walk_dir = os.path.abspath(walk_dir)
-print('walk_dir (absolute) = ' + os.path.abspath(root_path)+"\n")
-total_file_number = 0;
-total_file_number_processed = 0;
-for root, subdirs, files in os.walk(root_path):
-    file_number = 0
-    file_processed = 0
-    print('-- current directory = ' + root + "\n")
-    if("@eaDir" in root):
-        print("it's a eadir folder continue\n")
-        continue
 
-    for filename in files:
-        file_number += 1
-        file_path = os.path.join(root, filename)
-        md5enc.init_file(file_path)
-        if not md5enc.is_file_already_present() and file_path != os.path.join(root_path, "database.txt"):
-            file_processed += 1
-            md5enc.add_hash_in_database()
-        else :
-            pass
-    total_file_number += file_number
-    total_file_number_processed += file_processed
-    print("there was " + repr(file_number) + " in " + repr(root) + " and "+repr(file_processed)+" has been processed\n")
+def construct_new_directory(file_directory, new_folder):
+    new_directory = file_directory.replace(fsManager.root_path, "")[1:]
+    directory_structure = os.path.join(new_folder, new_directory)
+    fsManager.create_folder_if_not_exists(directory_structure)
+    return directory_structure
 
-print("At the end there was "+repr(total_file_number)+" and "+repr(total_file_number_processed)+" processed\n\nEND PROGRAM \n\n")
+
+def manageRegularImage(directory, filename, exif):
+    new_filename = exif.get("EXIF DateTimeOriginal")
+    print(exif.get("DateTimeOriginal"))
+    directory = construct_new_directory(directory, os.path.join(fsManager.processed_folder, "regular"))
+    os.rename(file_path, os.path.join(directory, filename))
+
+
+def manageEmptyExif(directory, filename):
+    directory = construct_new_directory(directory, os.path.join(fsManager.processed_folder, "emptyExif"))
+    os.rename(file_path, os.path.join(directory, filename))
+    pass
+
+
+def manageNonImage(directory, filename):
+    if (exif_reader.is_video(os.path.join(directory, filename))):
+        directory = construct_new_directory(directory, os.path.join(fsManager.processed_folder, "video"))
+    else:
+        directory = construct_new_directory(directory, os.path.join(fsManager.processed_folder, "nonImage"))
+    os.rename(file_path, os.path.join(directory, filename))
+    pass
+
+
+def manageDuplicateFiles(directory, filename):
+    if not exif_reader.is_image(os.path.join(directory, filename)):
+        if (exif_reader.is_video(os.path.join(directory, filename))):
+            directory = construct_new_directory(directory, os.path.join(fsManager.duplicate_folder, "video"))
+        else:
+            directory = construct_new_directory(directory, os.path.join(fsManager.duplicate_folder, "nonImage"))
+    else:
+        directory = construct_new_directory(directory, fsManager.duplicate_folder)
+    os.rename(file_path, os.path.join(directory, filename))
+    pass
+
+
+for root, subdirs, files in browser.crawl_folders():
+    for file in files:
+        file_path = os.path.join(root, file)
+        if (file_path == fsManager.database_path):
+            continue
+        print("-----------------")
+        browser.total_file_number += 1  # increment total number of files
+        # If true the file doesn't exists and can be processed
+        if not manageMD5(file_path):
+            print("file is duplicate skip")
+            manageDuplicateFiles(root, file)
+            continue
+        browser.total_file_number_processed += 1
+        exif = exif_reader.read_exif(file_path)
+        if not exif_reader.is_image(file_path):
+            print("file is not an image")
+            manageNonImage(root, file)
+            continue
+        if exif == {}:
+            print("can't read EXIF, there is no data")
+            manageEmptyExif(root, file)
+            continue
+        manageRegularImage(root, file, exif)
+
+print(repr(browser.total_file_number) + " files found")
+print(repr(browser.total_file_number_processed) + " files processed")

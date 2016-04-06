@@ -1,19 +1,23 @@
-import PIL.ExifTags
-import PIL.Image
+import mimetypes
 
+import exifread
+import magic
+from mimetypes import MimeTypes
 
 class ExifReader:
-    file_path = None
+    def __init__(self):
+        pass
 
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def read_exif(self, file):
+        f = open(file, 'rb')
+        # Return Exif tags
+        tags = exifread.process_file(f)
+        return tags
 
-    def read_exif(self):
-        img = PIL.Image.open(self.file_path)
-        exif = {
-            PIL.ExifTags.TAGS[k]: v
-            for k, v in img._getexif().items()
-            if k in PIL.ExifTags.TAGS
-            }
+    def is_image(self,file):
+        type = mimetypes.guess_type(file)[0]
+        return True if type != None and "image/" in type else False
 
-        return exif
+    def is_video(self,file):
+        type = mimetypes.guess_type(file)[0]
+        return True if type != None and "video/" in type else False

@@ -27,12 +27,12 @@ class MD5Encoder:
             print(file+" Not Found continuing")
         return ""
 
+    #Return true if Hash code is not blank and it's not present in database.txt
     def is_file_already_present(self):
         f = open(self.m_database_path)
         contents = f.read()
         f.close()
-        print(self.m_current_file+" "+self.m_hashed_value)
-        return True if self.m_hashed_value != "" and contents.count(self.m_hashed_value) > 0 else False
+        return True if self.m_hashed_value == "" or contents.count(self.m_hashed_value) > 0 else False
 
     def add_hash_in_database(self):
         file = open(self.m_database_path, "a", 1)

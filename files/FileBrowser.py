@@ -1,20 +1,23 @@
-import glob, os
+import os
 
 
 class FileBrowser:
-    m_folder_path = None
-    m_list_directory = []
-    m_list_file = []
+    total_file_number = 0;
+    total_file_number_processed = 0;
+    root_path = None
 
-    def __init__(self, folder_path):
-        self.m_folder_path = folder_path
+    def __init__(self, root_path):
+        self.root_path = root_path
 
-    def list_file(self):
-        os.chdir(self.m_folder_path)  # change directory
-        for file in glob.glob("*"):  # list all file in directory
-            if file == "database.txt":
+    #Will crawl and generate all the files of the root_path
+    def crawl_folders(self):
+        for root, subdirs, files in os.walk(self.root_path):
+            print('-- current directory = ' + root + "\n")
+            if ("@eaDir" in root):
+                print("it's a eadir folder continue\n")
                 continue
-            if os.path.isdir(file):
-                self.m_list_directory.append(os.path.join(self.m_folder_path, file))
-            else:
-                self.m_list_file.append(os.path.join(self.m_folder_path, file))
+            if "processed" in root or "duplicate" in root:
+                print("it's the processed or the duplicate folder skip")
+                continue
+
+            yield [root, subdirs, files]
