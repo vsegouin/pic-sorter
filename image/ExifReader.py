@@ -4,6 +4,7 @@ import exifread
 import magic
 from mimetypes import MimeTypes
 
+
 class ExifReader:
     def __init__(self):
         pass
@@ -14,10 +15,12 @@ class ExifReader:
         tags = exifread.process_file(f)
         return tags
 
-    def is_image(self,file):
+    def detect_image_file(self, file):
         type = mimetypes.guess_type(file)[0]
-        return True if type != None and "image/" in type else False
-
-    def is_video(self,file):
-        type = mimetypes.guess_type(file)[0]
-        return True if type != None and "video/" in type else False
+        if type == None:
+            return "other"
+        if "image/" in type:
+            return "image"
+        if "image/" in type:
+            return "video";
+        return "other"
