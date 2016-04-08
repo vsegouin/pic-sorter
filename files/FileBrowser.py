@@ -9,7 +9,7 @@ class FileBrowser:
     def __init__(self, root_path):
         self.root_path = root_path
 
-    #Will crawl and generate all the files of the root_path
+    # Will crawl and generate all the files of the root_path
     def crawl_folders(self):
         for root, subdirs, files in os.walk(self.root_path):
             print('-- current directory = ' + root + "\n")

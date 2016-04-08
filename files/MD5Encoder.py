@@ -6,7 +6,7 @@ class MD5Encoder:
     m_current_file = ""
     m_hashed_value = ""
 
-    def __init__(self,database_location):
+    def __init__(self, database_location):
         self.m_database_path = os.path.join(database_location, "database.txt")
         file = open(self.m_database_path, "a", 1)
         file.close()
@@ -15,7 +15,7 @@ class MD5Encoder:
         self.m_current_file = file_path
         self.m_hashed_value = self.hash_file(file_path)
 
-    def hash_file(self,file):
+    def hash_file(self, file):
         self.m_current_file = file
         hash_md5 = hashlib.md5()
         try:
@@ -24,10 +24,11 @@ class MD5Encoder:
                     hash_md5.update(chunk)
             return hash_md5.hexdigest()
         except FileNotFoundError:
-            print(file+" Not Found continuing")
+            print(file + " Not Found continuing")
         return ""
 
-    #Return true if Hash code is not blank and it's not present in database.txt
+    #
+    # Return true if Hash code is not blank and it's not present in database.txt
     def is_file_already_present(self):
         f = open(self.m_database_path)
         contents = f.read()
@@ -39,3 +40,14 @@ class MD5Encoder:
         file.write(self.m_hashed_value)
         file.write("\n\r")
         file.close()
+
+    def process_md5(self, file_path):
+        print(file_path)
+        self.init_file(file_path)
+        # if it's a duplicate or the database itself then there is no reason to continue
+        if self.is_file_already_present():
+            print(self.m_hashed_value + " already present")
+            return False
+        self.add_hash_in_database()
+        print(self.m_hashed_value + " added")
+        return True

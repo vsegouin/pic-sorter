@@ -1,8 +1,6 @@
 import mimetypes
 
 import exifread
-import magic
-from mimetypes import MimeTypes
 
 
 class ExifReader:
@@ -24,3 +22,4 @@ class ExifReader:
         if "image/" in type:
             return "video";
         return "other"
+
