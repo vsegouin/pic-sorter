@@ -10,7 +10,10 @@ class ExifReader:
     def read_exif(self, file):
         f = open(file, 'rb')
         # Return Exif tags
-        tags = exifread.process_file(f)
+        try:
+            tags = exifread.process_file(f)
+        except TypeError or TypeError :
+            tags = ''
         return tags
 
     def detect_image_file(self, file):
@@ -20,6 +23,5 @@ class ExifReader:
         if "image/" in type:
             return "image"
         if "image/" in type:
-            return "video";
+            return "video"
         return "other"
-

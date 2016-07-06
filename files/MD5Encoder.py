@@ -1,5 +1,9 @@
 import os, hashlib
 
+import errno
+
+from Reporting import Reporting
+
 
 class MD5Encoder:
     m_database_path = ""
@@ -23,8 +27,9 @@ class MD5Encoder:
                 for chunk in iter(lambda: f.read(4096), b""):
                     hash_md5.update(chunk)
             return hash_md5.hexdigest()
-        except FileNotFoundError:
-            print(file + " Not Found continuing")
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                Reporting.log(file + " Not Found continuing")
         return ""
 
     #
@@ -42,12 +47,12 @@ class MD5Encoder:
         file.close()
 
     def process_md5(self, file_path):
-        print(file_path)
+        Reporting.log(file_path)
         self.init_file(file_path)
         # if it's a duplicate or the database itself then there is no reason to continue
         if self.is_file_already_present():
-            print(self.m_hashed_value + " already present")
+            Reporting.log(self.m_hashed_value + " already present")
             return False
         self.add_hash_in_database()
-        print(self.m_hashed_value + " added")
+        Reporting.log(self.m_hashed_value + " added")
         return True
