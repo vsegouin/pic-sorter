@@ -101,6 +101,7 @@ class FileSystemManager:
         basename, ext = os.path.splitext(filename)
         dest_name = self.extract_datetime(file_exif)
         Reporting.image_found += 1
+        root_folder="regular"
         if file_exif == {} or dest_name == "" or dest_name == 'None' or re.search(r'(\d{4}):(\d{2}):(\d{2})',
                                                                                   dest_name) == 'None':
             root_folder = "emptyExif"
@@ -111,8 +112,14 @@ class FileSystemManager:
                 Reporting.image_without_exif += 1
             dest_name, dest_directory = self.detect_file_date(directory, filename, root_folder)
         else:
-            match = re.search(r'(\d{4}):(\d{2}):(\d{2})', dest_name).groups()
-            root_folder = "regular"
+            try:
+                match = re.search(r'(\d{4}):(\d{2}):(\d{2})', dest_name).groups()
+                root_folder = "regular"
+            except AttributeError:
+                Reporting.errors_files_details.append(os.path.join(directory,filename))
+                Reporting.errors_files+=1
+                root_folder="error"
+
             if ext in unauthorizedExtension:
                 root_folder = "unauthorized"
                 Reporting.increment_unauthorized_extension(ext)

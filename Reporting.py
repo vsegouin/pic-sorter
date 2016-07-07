@@ -16,6 +16,7 @@ class Singleton(type):
 # Python2
 class Reporting(object):
     # global data
+    hashed = []
     calculated_total_file = 0
     total_file = 0  #
     total_file_processed = 0  #

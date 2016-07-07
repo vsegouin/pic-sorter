@@ -12,7 +12,7 @@ import os
 import sys
 import logging
 logging.basicConfig(level=logging.INFO)
-logging.debug("toto")
+
 try:
     Parameters.root_path = sys.argv[1]
 except IndexError:

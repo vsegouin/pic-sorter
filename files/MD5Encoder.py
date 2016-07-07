@@ -15,6 +15,13 @@ class MD5Encoder:
         file = open(self.m_database_path, "a", 1)
         file.close()
 
+    def write_all(self,list):
+        file = open("test.txt", "a", 1)
+        for item in list:
+            file.write(item)
+            file.write("\n\r")
+        file.close()
+
     def init_file(self, file_path):
         self.m_current_file = file_path
         self.m_hashed_value = self.hash_file(file_path)
