@@ -115,19 +115,19 @@ class FileSystemManager:
             try:
                 match = re.search(r'(\d{4}):(\d{2}):(\d{2})', dest_name).groups()
                 root_folder = "regular"
-				if ext in unauthorizedExtension:
-					root_folder = "unauthorized"
-					Reporting.increment_unauthorized_extension(ext)
-				else:
-					Reporting.image_with_exif += 1
-				dest_directory = self.create_folder_if_not_exists(os.path.join(self.processed_folder, root_folder, repr(match[0]).replace("\\", "").replace("'", ""), months[int(match[1]) - 1]))
-			except AttributeError:
+                if ext in unauthorizedExtension:
+                    root_folder = "unauthorized"
+                    Reporting.increment_unauthorized_extension(ext)
+                else:
+                    Reporting.image_with_exif += 1
+                dest_directory = self.create_folder_if_not_exists(os.path.join(self.processed_folder, root_folder, repr(match[0]).replace("\\", "").replace("'", ""), months[int(match[1]) - 1]))
+            except AttributeError:
                 Reporting.errors_files_details.append(os.path.join(directory,filename))
                 Reporting.errors_files+=1
                 root_folder="error"
-				dest_directory = self.create_folder_if_not_exists(os.path.join(self.processed_folder, root_folder, filename))
+                dest_directory = self.create_folder_if_not_exists(os.path.join(self.processed_folder, root_folder, filename))
 
-        self.move_file(directory, filename, dest_directory, (dest_name + ext).replace(":", "-"))
+            self.move_file(directory, filename, dest_directory, (dest_name + ext).replace(":", "-"))
 
     def manage_non_image(self, directory, filename, file_type):
         if file_type == "video":
