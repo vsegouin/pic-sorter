@@ -12,7 +12,7 @@ class ExifReader:
         # Return Exif tags
         try:
             tags = exifread.process_file(f)
-        except TypeError or TypeError :
+        except TypeError :
             tags = ''
         return tags
 

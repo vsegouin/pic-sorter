@@ -20,6 +20,7 @@ class FileSystemManager:
 
     def __init__(self, root_path):
 
+        self.duplicate_file_path = os.path.join(root_path, "duplicate.txt")
         self.root_path = root_path
         self.database_path = os.path.join(root_path, "database.txt")
         self.duplicate_folder = os.path.join(root_path, "duplicate")
@@ -45,7 +46,7 @@ class FileSystemManager:
         if new_filename == "    " or new_filename is None or new_filename == "None":
             new_filename = file_exif.get("Image DateTime")
             new_filename = str(new_filename).replace(" ", "_")
-        if new_filename == "" or new_filename is None or unicode(new_filename) == '':
+        if new_filename == "" or new_filename is None or str(new_filename) == '':
             return ""
         else:
             Reporting.date_by_exif += 1
@@ -85,8 +86,8 @@ class FileSystemManager:
             if not Parameters.dry_run:
                 os.rename(os.path.join(file_directory, filename), dst_file)
             Reporting.file_moved += 1
-        except WindowsError:
-            Reporting.unmovable_file += 1
+        except WindowsError or FileNotFoundError:
+            Reporting.unmovable_file.append(os.path.join(file_directory, filename))
             Reporting.log("CAN'T MOVE THIS FILE !!!!!")
 
     def manage_image(self, directory, filename, file_exif):
@@ -99,11 +100,13 @@ class FileSystemManager:
         :param file_exif: extracted exif data of the file
         """
         basename, ext = os.path.splitext(filename)
-        dest_name = self.extract_datetime(file_exif)
+        try:
+            dest_name = self.extract_datetime(file_exif)
+        except AttributeError:
+            dest_name = ""
         Reporting.image_found += 1
         root_folder="regular"
-        if file_exif == {} or dest_name == "" or dest_name == 'None' or re.search(r'(\d{4}):(\d{2}):(\d{2})',
-                                                                                  dest_name) == 'None':
+        if file_exif == {} or dest_name == "" or dest_name == 'None' or re.search(r'(\d{4}):(\d{2}):(\d{2})', dest_name) == 'None':
             root_folder = "emptyExif"
             if ext in unauthorizedExtension:
                 root_folder = "unauthorized"
@@ -127,7 +130,7 @@ class FileSystemManager:
                 root_folder="error"
                 dest_directory = self.create_folder_if_not_exists(os.path.join(self.processed_folder, root_folder, filename))
 
-            self.move_file(directory, filename, dest_directory, (dest_name + ext).replace(":", "-"))
+        self.move_file(directory, filename, dest_directory, (dest_name + ext).replace(":", "-"))
 
     def manage_non_image(self, directory, filename, file_type):
         if file_type == "video":
@@ -140,8 +143,11 @@ class FileSystemManager:
         else:
             dest_directory = self.copy_directory_structure(directory, os.path.join(self.processed_folder, "nonImage"))
             Reporting.other_found += 1
+        try:
+            self.move_file(directory, filename, dest_directory, filename)
+        except:
+            Reporting.unmovable_file.append(os.path.join(directory,filename))
 
-        self.move_file(directory, filename, dest_directory, filename)
 
     def manage_duplicate_file(self, directory, filename, file_type):
         Reporting.duplicate_found += 1
@@ -171,7 +177,10 @@ class FileSystemManager:
             pattern = "^" + os.sep + os.sep
         new_directory = re.sub(pattern, "", new_directory)
         new_directory = os.path.join(directory_destination, new_directory)
-        self.create_folder_if_not_exists(new_directory)
+        try:
+            self.create_folder_if_not_exists(new_directory)
+        except FileNotFoundError:
+            Reporting.unmovable_file.append(new_directory)
         return new_directory
 
     def detect_file_date(self, directory, filename, root_folder):

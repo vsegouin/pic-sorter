@@ -2,6 +2,7 @@ import logging
 from logging import Logger
 
 from Parameters import Parameters
+import os
 
 
 class Singleton(type):
@@ -86,8 +87,8 @@ class Reporting(object):
     @classmethod
     def log(cls, string):
         if Parameters.is_verbose:
-            print string
+            print(string)
 
     @classmethod
-    def showProgress(cls):
-        logging.info(repr(Reporting.total_file) + " / " + repr(Reporting.calculated_total_file))
+    def showProgress(cls,file,filePath):
+        logging.info(repr(Reporting.total_file) + " / " + repr(Reporting.calculated_total_file)+" | "+file+" | "+repr(os.path.getsize(filePath) >> 20)+"Mo")

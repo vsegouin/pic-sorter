@@ -19,20 +19,33 @@ except IndexError:
     Reporting.log("PLEASE PROVIDE A PATH AS PARAMETER")
     exit(0)
 try:
-    if sys.argv[2] == 'true':
-        Parameters.dry_run = True
-    else:
+    if sys.argv[2] == 'false':
         Parameters.dry_run = False
+    else:
+        Parameters.dry_run = True
 except IndexError:
-    Parameters.dry_run = False
+    Parameters.dry_run = True
 
 fsManager = FileSystemManager(Parameters.root_path)
-browser = FileBrowser(fsManager.root_path)
 md5_encryptor = MD5Encoder(fsManager.root_path)
 exif_reader = ExifReader()
 
-browser.count_total_find()
+browser = FileBrowser(fsManager.root_path)
 debut = time.time()
+browser.count_processed_file()
+
+# Crawl the processed folder to recreate database with existing files
+for root, subdirs, files in browser.crawl_processed_folder():
+    for file in files:
+        file_path = os.path.join(root, file)
+        Reporting.total_file += 1  # increment total number of files
+        Reporting.showProgress(file,file_path)
+        try:
+            if not md5_encryptor.process_md5(file_path):
+                md5_encryptor.add_file_in_duplicate_list(file_path)
+        except IOError:
+            fsManager.manage_non_image(root, file, "error")
+browser.count_total_find()
 
 Reporting.log(repr(debut))
 for root, subdirs, files in browser.crawl_folders():
@@ -40,11 +53,11 @@ for root, subdirs, files in browser.crawl_folders():
         # construct full image path
         file_path = os.path.join(root, file)
         # check if it's the database
-        if file_path == fsManager.database_path:
+        if file_path == fsManager.database_path or file_path == fsManager.duplicate_file_path:
             continue
         Reporting.log("-----------------")
         Reporting.total_file += 1  # increment total number of files
-        Reporting.showProgress()
+        Reporting.showProgress(file,file_path)
         # find the mime type
         file_type = exif_reader.detect_image_file(os.path.join(root, file))
         # check if a duplicate is already found

@@ -9,9 +9,11 @@ class MD5Encoder:
     m_database_path = ""
     m_current_file = ""
     m_hashed_value = ""
+    m_duplicate_file = ""
 
     def __init__(self, database_location):
         self.m_database_path = os.path.join(database_location, "database.txt")
+        self.m_duplicate_file = os.path.join(database_location, "duplicate.txt")
         file = open(self.m_database_path, "a", 1)
         file.close()
 
@@ -46,6 +48,12 @@ class MD5Encoder:
         contents = f.read()
         f.close()
         return True if self.m_hashed_value == "" or contents.count(self.m_hashed_value) > 0 else False
+
+    def add_file_in_duplicate_list(self,file_path):
+        file = open(self.m_duplicate_file, "a", 1)
+        file.write(file_path)
+        file.write("\n\r")
+        file.close()
 
     def add_hash_in_database(self):
         file = open(self.m_database_path, "a", 1)
