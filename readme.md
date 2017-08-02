@@ -1,4 +1,4 @@
-##PIC SORTER
+###PIC SORTER
 
 Pic sorter is a python script created to crawl a folder and try to sort them depending on their MIME type
 It will also move all the duplicated files in another folder.
