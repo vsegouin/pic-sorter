@@ -1,3 +1,7 @@
 exifread
 python-magic
 watchdog
+pytesseract
+pyocr
+wand
+gpsimage

@@ -1,10 +1,8 @@
 import logging
-from utils.Logger import Logger
 from utils.parameters import Parameters
 import os
 
-logger = Logger()
-
+logger = logging.getLogger(__name__)
 
 # Python2
 class Reporting(object):
@@ -49,7 +47,7 @@ class Reporting(object):
 
     @staticmethod
     def do_reporting():
-        logger.log("\n\r\n\r===========================\n\r========Global infos=======\n\r===========================" +
+        logger.info("\n\r\n\r===========================\n\r========Global infos=======\n\r===========================" +
                    "\n\rTotal File found " + repr(Reporting.total_file) +
                    "\n\rTotal File processed " + repr(Reporting.total_file_processed) +
                    "\n\rTotal File Moved " + repr(Reporting.file_moved) +

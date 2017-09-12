@@ -1,19 +1,19 @@
+# coding=utf-8
 import os
-from utils.Logger import Logger
+import logging
 from utils.parameters import Parameters
 from utils.reporting import Reporting
 
 skipping_folders = ['@eaDir', 'processed', 'duplicate']
 
-logger = Logger()
+logger = logging.getLogger(__name__)
 
 
 def crawl_folders(root_path):
     for root, subdirs, files in os.walk(root_path):
         if any(forbidden_path in root for forbidden_path in skipping_folders):
             continue
-        if (Parameters.is_verbose):
-            logger.log('-- current directory = ' + root)
+        logger.debug('-- current directory = ' + root)
         yield [root, subdirs, files]
 
 

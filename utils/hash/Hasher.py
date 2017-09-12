@@ -1,8 +1,7 @@
 import hashlib
-from utils.Logger import Logger
 import errno
-
-logger = Logger()
+import logging
+logger = logging.getLogger(__name__)
 
 
 def hash_file(type,file):
@@ -18,5 +17,5 @@ def hash_file(type,file):
         return hash_md5.hexdigest()
     except OSError as e:
         if e.errno == errno.ENOENT:
-            logger.log(file + " Not Found continuing")
+            logger.info(file + " Not Found continuing")
     return ""
