@@ -1,14 +1,13 @@
 # coding=utf-8
-import json
+import logging
 import os
 import platform
 import re
 
-import logging
-from PIL import Image
-
-from services.images.exif_reader import get_exif_location, read_exif, get_exit_date
-from utils.date_utils import extract_datetime_from_exif, detect_file_date, months
+from services.images.exif_reader import get_exif_location, read_exif, get_exif_dimensions
+from utils import date_utils
+from utils.date_utils import extract_datetime_from_exif, months, detect_file_date_from_filename, \
+    detect_file_date_from_os
 from utils.files.file_writer import create_folder_if_not_exists, move_file
 from utils.parameters import Parameters, PATHS
 from utils.reporting import Reporting
@@ -22,20 +21,18 @@ unauthorizedExtension = ['.ico', '.gif']
 def sort_image(file_path):
     # GET EXIF
     exif_data = read_exif(file_path)
-    # GET GEOLOCALISATION
-    lon, lat = (get_exif_location(exif_data))
-    logger.info('LON : ' + repr(lon))
-    logger.info('LAT : ' + repr(lat))
+    if(not exif_data == {}):
+        # GET GEOLOCALISATION
+        lon, lat = get_exif_location(exif_data)
+        logger.info('LON : ' + repr(lon))
+        logger.info('LAT : ' + repr(lat))
+        get_exif_dimensions(exif_data)
+        # GET LOCALITY THANKS TO GEOCODING
 
-    # GET DATE DONE
-    date = get_exit_date(exif_data)
-    logger.info('date 1 :'+repr(date))
-    date_2 = extract_datetime_from_exif(exif_data)
-    logger.info('date 2 :'+repr(date_2))
-    date_3 = detect_file_date(file_path)
-    logger.info('date 3 :'+repr(date_3))
-# Image type Dessin
-# Image Type Photo
+    # GUESS BEST DATE
+    date_utils.get_best_date(file_path,exif_data)
+
+
 
 def manage_image(directory, filename, file_exif):
     """

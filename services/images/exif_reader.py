@@ -60,5 +60,9 @@ def get_exif_location(exif_data):
 
     return lat, lon
 
-def get_exit_date(exif_data):
-    return exif_data.get("EXIF DateTimeOriginal")
+def get_exif_dimensions(exif_data):
+    width = _get_if_exist(exif_data, 'Image XResolution')
+    height =  _get_if_exist(exif_data, 'Image YResolution')
+    print(width)
+    print(height)
+    exit()
