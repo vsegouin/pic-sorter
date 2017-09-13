@@ -1,10 +1,9 @@
-import os
-
 import logging
-from utils.files.file_writer import create_folder_if_not_exists
-from utils.parameters import PATHS
+import os
+import re
+import time
+
 from utils.reporting import Reporting
-import re, time
 
 months = ["Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre",
           "Decembre"]
@@ -50,15 +49,13 @@ def detect_file_date(file_path):
     :param root_folder: the directory where the file will end up
     :return: the final name of the file and the new directory
     """
-    dest_directory = ""
     for pattern in possible_pattern:
         matches = re.match(pattern, file_path)
         if (matches != None):
-            Logger.getLogger().info(matches.groups())
+            logging.getLogger(__name__).info(matches.groups())
 
     # Last chance : get filesystem creation date
     match = time.gmtime(os.path.getmtime(file_path))
     final_name = repr(match[0]) + ":" + repr(match[1]) + ":" + repr(match[2]) + "_" + repr(
         match[3]) + ":" + repr(match[4]) + ":" + repr(match[5])
-    return final_name, dest_directory
-
+    return final_name

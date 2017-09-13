@@ -1,8 +1,7 @@
+import logging
 import mimetypes
 import os
-import magic
 
-import logging
 from utils.constants import MIMES_TYPES
 
 logger = logging.getLogger(__name__)

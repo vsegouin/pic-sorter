@@ -8,6 +8,7 @@ class Parameters:
     is_verbose = False
     dry_run = False
     is_windows = platform.system() == "Windows"
+    log_level = logging.INFO
 
     @staticmethod
     def parse_args():
@@ -26,6 +27,8 @@ class Parameters:
         Parameters.dry_run = args.dry_run
         Parameters.reset_database = args.reset_database
 
+        if Parameters.is_verbose:
+            Parameters.log_level = logging.DEBUG
 
 class PATHS:
     root_path = ""
@@ -45,7 +48,6 @@ def show_parameters():
     PATHS_attr = [attr for attr in dir(PATHS) if not callable(getattr(PATHS, attr)) and not attr.startswith("__")]
     Parameters_attr = [attr for attr in dir(Parameters) if
                        not callable(getattr(Parameters, attr)) and not attr.startswith("__")]
-
     logger = logging.getLogger(__name__)
     for i in PATHS_attr:
         logger.info(i + ' : ' + repr(getattr(PATHS, i)))

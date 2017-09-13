@@ -9,14 +9,14 @@ from services.sorting.sorting_factory import manage_file
 from utils.hash import Hasher
 from utils.parameters import Parameters, show_parameters, PATHS
 
+Parameters.parse_args()
+initializer.initialize()
 
 logger = logging.getLogger(__name__)
 
-args = Parameters.parse_args()
 show_parameters()
 # file_crawler.count_total_find(PATHS.root_path)
 
-initializer.initialize()
 for root, subdirs, files in file_crawler.crawl_folders(PATHS.root_path):
     for file in files:
         file_path = os.path.join(root, file)

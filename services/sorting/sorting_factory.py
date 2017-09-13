@@ -1,6 +1,5 @@
 # coding=utf-8
 from services.sorting import image_sorting
-import logging
 from utils.constants import MIMES_TYPES
 
 
