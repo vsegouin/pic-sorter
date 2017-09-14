@@ -5,10 +5,10 @@ import re
 import sys
 
 from utils.parameters import Parameters
-from utils.reporting import Reporting
 
 
 def create_folder_if_not_exists(folder):
+    from utils.reporting import Reporting
     """
     Check if the requested folder exists and create it if not
     :param folder:
@@ -23,8 +23,8 @@ def create_folder_if_not_exists(folder):
 
 def write_in_file(file, text):
     file = open(file, "a", 1)
-    file.write(repr(text.encode(sys.stdout.encoding, errors='ignore')))
-    file.write("\n\r")
+    file.write(text)
+    file.write("\r\n")
     file.close()
 
 
@@ -37,6 +37,7 @@ def move_file(file_directory, filename, dest_directory, dest_filename):
     :param dest_directory: the new directory of the file
     :param dest_filename: the new filename
     """
+    from utils.reporting import Reporting
     dest_filename = re.sub('[<>:\"/\|\?*]', '_', dest_filename)
     basename, ext = os.path.splitext(dest_filename)
     dst_file = os.path.join(dest_directory, dest_filename)

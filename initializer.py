@@ -13,11 +13,16 @@ def initialize():
         mode = "a"
 
     for hash_mode in Parameters.hash_modes:
+        init_file(PATHS.hash_databases.get(hash_mode),mode)
         print(hash_mode)
-        file = open(PATHS.hash_databases.get(hash_mode), mode, 1)
-        file.close()
+
+    init_file("dup",mode)
+    init_file("unique_files",mode)
     init_logger()
 
+def init_file(file_path,mode):
+    file = open(file_path, mode, 1)
+    file.close()
 
 def init_logger():
     log_format = '%(asctime)s - %(name)s - %(message)s'

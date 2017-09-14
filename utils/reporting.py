@@ -1,5 +1,7 @@
 import logging
-from utils.parameters import Parameters
+
+from utils.files.file_writer import write_in_file
+from utils.parameters import Parameters, PATHS
 import os
 
 logger = logging.getLogger(__name__)
@@ -47,30 +49,32 @@ class Reporting(object):
 
     @staticmethod
     def do_reporting():
-        logger.info("\n\r\n\r===========================\n\r========Global infos=======\n\r===========================" +
-                   "\n\rTotal File found " + repr(Reporting.total_file) +
-                   "\n\rTotal File processed " + repr(Reporting.total_file_processed) +
-                   "\n\rTotal File Moved " + repr(Reporting.file_moved) +
-                   "\n\r\n\r===========================\n\r=======Type Detected=======\n\r===========================" +
-                   "\n\rImages found : " + repr(Reporting.image_found) +
-                   "\n\rVideos found : " + repr(Reporting.videos_found) +
-                   "\n\rOther found : " + repr(Reporting.other_found) +
-                   "\n\rDuplicate found : " + repr(Reporting.duplicate_found) +
-                   "\n\r\n\r===========================\n\r==Informations about image=\n\r===========================" +
-                   "\n\rImage with exif : " + repr(Reporting.image_with_exif) +
-                   "\n\rImage without exif : " + repr(Reporting.image_without_exif) +
-                   "\n\rDate found with exif : " + repr(Reporting.date_by_exif) +
-                   "\n\rDate found with filename : " + repr(Reporting.date_by_name) +
-                   "\n\rDate found with modification date : " + repr(Reporting.date_by_modified) +
-                   "\n\r\n\r===========================\n\r==========Errors===========\n\r===========================" +
-                   "\n\rErrors file : " + repr(Reporting.errors_files) +
-                   "\n\r\n\r===========================\n\r=Path of problematics file=\n\r===========================" +
-                   "\n\rUnmovable file : " + repr(Reporting.unmovable_file.__len__()) + "\n\r" +
-                   "\n\r".join(Reporting.unmovable_file) +
-                   "\n\r\n\r===========================\n\r=======Path created========\n\r===========================" +
-                   "\n\rPath Created : " + repr(list(set(Reporting.path_created)).__len__()) + "\n\r" +
-                   "\n\r".join(list(set(Reporting.path_created)))
-                   )
+        report = ("\r\n\r\n===========================\r\n========Global infos=======\r\n===========================" +
+                   "\r\nTotal File found " + repr(Reporting.total_file) +
+                   "\r\nTotal File processed " + repr(Reporting.total_file_processed) +
+                   "\r\nTotal File Moved " + repr(Reporting.file_moved) +
+                   "\r\n\r\n===========================\r\n=======Type Detected=======\r\n===========================" +
+                   "\r\nImages found : " + repr(Reporting.image_found) +
+                   "\r\nVideos found : " + repr(Reporting.videos_found) +
+                   "\r\nOther found : " + repr(Reporting.other_found) +
+                   "\r\nDuplicate found : " + repr(Reporting.duplicate_found) +
+                   "\r\n\r\n===========================\r\n==Informations about image=\r\n===========================" +
+                   "\r\nImage with exif : " + repr(Reporting.image_with_exif) +
+                   "\r\nImage without exif : " + repr(Reporting.image_without_exif) +
+                   "\r\nDate found with exif : " + repr(Reporting.date_by_exif) +
+                   "\r\nDate found with filename : " + repr(Reporting.date_by_name) +
+                   "\r\nDate found with modification date : " + repr(Reporting.date_by_modified) +
+                   "\r\n\r\n===========================\r\n==========Errors===========\r\n===========================" +
+                   "\r\nErrors file : " + repr(Reporting.errors_files) +
+                   "\r\n\r\n===========================\r\n=Path of problematics file=\r\n===========================" +
+                   "\r\nUnmovable file : " + repr(Reporting.unmovable_file.__len__()) + "\r\n" +
+                   "\r\n".join(Reporting.unmovable_file) +
+                   "\r\n\r\n===========================\r\n=======Path created========\r\n===========================" +
+                   "\r\nPath Created : " + repr(list(set(Reporting.path_created)).__len__()) + "\r\n" +
+                   "\r\n".join(list(set(Reporting.path_created))))
+        logger.info(report)
+        write_in_file(PATHS.report_file_path,report)
+        logger.info('Report can be read at '+os.path.join(PATHS.report_file_path))
 
     @staticmethod
     def show_progress(file, file_path):

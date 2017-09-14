@@ -12,35 +12,32 @@ from utils.parameters import PATHS, Parameters
 logger = logging.getLogger(__name__)
 
 
-def check_duplication(file_path):
+def check_duplication(file_path, add_hash = True):
     # Get hash files
     logger.debug('file : ' + file_path)
     is_present = True
     duplicate_file_path = None
+    # We check each hash
     for hash_mode in Parameters.hash_modes:
         file_hash = Hasher.hash_file(hash_mode, file_path)
         hash_present, line_found, duplicate_file_path = is_file_already_present(hash_mode, file_hash)
-        if not hash_present:
+        # If file is found and auth to write in database
+        if not hash_present and add_hash:
             write_in_file(PATHS.hash_databases.get(hash_mode), file_hash + '|' + file_path)
         is_present = is_present and hash_present
 
 
-    # File present in database
-    # Write hash if not exists
     if is_present:
-        logger.info("file exists")
-        write_in_file(PATHS.hash_databases.get('md5')+'toto',file_path+' = '+duplicate_file_path)
-        return True
+        return True, duplicate_file_path
     else:
-        return False
+        return False, file_path
 
 
 def is_file_already_present(type, hash):
     with open(PATHS.hash_databases.get(type), 'r', -1, sys.stdout.encoding) as myFile:
         for num, line in enumerate(myFile, 1):
             if hash in line:
-                logger.debug(
-                    type + ' ' + hash + ' found at line:' + repr(num) + ' duplicate file is : ' + line.split('|')[1])
+                logger.debug(type + ' ' + hash + ' found at line:' + repr(num) + ' duplicate file is : ' + line.split('|')[1])
                 return True, num, line.split('|')[1]
     return False, None, None
 

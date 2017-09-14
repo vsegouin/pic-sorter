@@ -11,6 +11,7 @@ from utils.constants import MODE
 from utils.files.file_writer import write_in_file
 from utils.hash import Hasher
 from utils.parameters import Parameters, show_parameters, PATHS
+from utils.reporting import Reporting
 
 Parameters.parse_args()
 initializer.initialize()
@@ -18,7 +19,6 @@ initializer.initialize()
 logger = logging.getLogger(__name__)
 
 show_parameters()
-
 
 # file_crawler.count_total_find(PATHS.root_path)
 
@@ -39,13 +39,27 @@ elif Parameters.application_mode == MODE.DEDUP:
     for root, subdirs, files in file_crawler.crawl_folders(PATHS.dedup_path[0]):
         for file in files:
             file_path = os.path.join(root, file)
-            if check_duplication(file_path):
-                continue
+            check_duplication(file_path)
 
+    logger.info('First file iteration done')
     for i in range(1, len(PATHS.dedup_path)):
-        print(i)
+        write_in_file('dup', '----- Deduping : ' + PATHS.dedup_path[i] + ' ---------')
+        write_in_file('unique_files', '----- Deduping : ' + PATHS.dedup_path[i] + ' ---------')
+        for root, subdirs, files in file_crawler.crawl_folders(PATHS.dedup_path[i]):
+            for file in files:
+                file_path = os.path.join(root, file)
+                exists, dup_file_path = check_duplication(file_path, True)
+                if exists:
+                    Reporting.duplicate_found += 1
+                    write_in_file('dup', repr(file_path + ' = ' + dup_file_path).replace("\r\n", ""))
+                    logger.info('file exists')
+                else:
+                    logger.info('file doesnt exists')
+                    write_in_file('unique_files', dup_file_path)
 
-        # file_watcher.start_thread()
+                    # file_watcher.start_thread()
 
+if Parameters.report:
+    Reporting.do_reporting()
 # while True:
 #    time.sleep(1)
