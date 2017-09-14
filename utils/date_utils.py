@@ -87,5 +87,4 @@ def get_best_date(file_path, exif_data):
         date = detect_file_date_from_filename(file_path)
     if date is None:
         date = detect_file_date_from_os(file_path)
-    logger.info('date is :\t\t' + repr(date))
     return date

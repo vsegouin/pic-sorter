@@ -4,8 +4,10 @@ from utils.constants import MIMES_TYPES
 
 
 def manage_file(file_path, mimes_type):
-    if mimes_type == MIMES_TYPES.IMAGE:
-        return image_sorting.sort_image(file_path)
+    print(file_path)
+    print(mimes_type)
+    # if mimes_type == MIMES_TYPES.IMAGE:
+    #   return image_sorting.sort_image(file_path)
 
 
 # @todo:REFACTOR

@@ -4,6 +4,8 @@ import os
 import platform
 import re
 
+from PIL import Image
+
 from services.images.exif_reader import get_exif_location, read_exif, get_exif_dimensions
 from utils import date_utils
 from utils.date_utils import extract_datetime_from_exif, months, detect_file_date_from_filename, \
@@ -19,19 +21,17 @@ unauthorizedExtension = ['.ico', '.gif']
 
 
 def sort_image(file_path):
+    logger.info(file_path)
     # GET EXIF
     exif_data = read_exif(file_path)
-    if(not exif_data == {}):
+    if (not exif_data == {}):
         # GET GEOLOCALISATION
         lon, lat = get_exif_location(exif_data)
-        logger.info('LON : ' + repr(lon))
-        logger.info('LAT : ' + repr(lat))
-        get_exif_dimensions(exif_data)
+        height, width, total = get_exif_dimensions(exif_data)
+        date = date_utils.get_best_date(file_path, exif_data)
         # GET LOCALITY THANKS TO GEOCODING
 
     # GUESS BEST DATE
-    date_utils.get_best_date(file_path,exif_data)
-
 
 
 def manage_image(directory, filename, file_exif):

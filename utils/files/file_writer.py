@@ -1,5 +1,8 @@
+# coding=utf-8
 import os
 import re
+
+import sys
 
 from utils.parameters import Parameters
 from utils.reporting import Reporting
@@ -20,7 +23,7 @@ def create_folder_if_not_exists(folder):
 
 def write_in_file(file, text):
     file = open(file, "a", 1)
-    file.write(text)
+    file.write(repr(text.encode(sys.stdout.encoding, errors='ignore')))
     file.write("\n\r")
     file.close()
 

@@ -8,10 +8,14 @@ def initialize():
     create_folder_if_not_exists(PATHS.duplicate_folder)
     create_folder_if_not_exists(PATHS.processed_folder)
     if Parameters.reset_database:
-        file = open(PATHS.md5_database_path, "w", 1)
+        mode = "w"
     else:
-        file = open(PATHS.md5_database_path, "a", 1)
-    file.close()
+        mode = "a"
+
+    for hash_mode in Parameters.hash_modes:
+        print(hash_mode)
+        file = open(PATHS.hash_databases.get(hash_mode), mode, 1)
+        file.close()
     init_logger()
 
 

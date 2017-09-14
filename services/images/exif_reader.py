@@ -23,6 +23,13 @@ def _get_if_exist(data, key):
     return None
 
 
+def dump_exif_data(exif_data):
+    exif_object = []
+    print(exif_data)
+    for tag in exif_data:
+        print({tag: exif_data[tag]})
+
+
 def _convert_to_degress(value):
     """
     Helper function to convert the GPS coordinates stored in the EXIF to degress in float format
@@ -60,9 +67,13 @@ def get_exif_location(exif_data):
 
     return lat, lon
 
+
 def get_exif_dimensions(exif_data):
-    width = _get_if_exist(exif_data, 'Image XResolution')
-    height =  _get_if_exist(exif_data, 'Image YResolution')
-    print(width)
-    print(height)
-    exit()
+    # x_resolution = _get_if_exist(exif_data, 'Image XResolution')
+    # y_resolution = _get_if_exist(exif_data, 'Image YResolution')
+    width = _get_if_exist(exif_data, 'EXIF ExifImageWidth')
+    height = _get_if_exist(exif_data, 'EXIF ExifImageLength')
+    try:
+        return height, width, (width * height)
+    except:
+        return height, width, None

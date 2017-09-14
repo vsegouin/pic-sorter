@@ -2,6 +2,10 @@
 import json
 
 
+class MODE:
+    SORTER = "SORTER"
+    DEDUP = "DEDUP"
+
 class MIMES_TYPES:
     NODE_MODULES = "node_modules"
     IDEA = "idea_file"
