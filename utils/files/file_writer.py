@@ -1,6 +1,7 @@
 # coding=utf-8
 import os
 import re
+import codecs
 
 import sys
 
@@ -22,10 +23,35 @@ def create_folder_if_not_exists(folder):
 
 
 def write_in_file(file, text):
-    file = open(file, "a", 1)
+    file = codecs.open(file, "a", "utf-8")
     file.write(text)
     file.write("\r\n")
     file.close()
+
+
+def delete_files_if_exists(file_path_list):
+    for file_path in file_path_list:
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        else:
+            print(file_path)
+            print('error')
+            exit()
+
+
+def remove_line_from_file(file, line_number):
+    print(file)
+    print(line_number)
+    f = open(file, "r")
+    lines = f.readlines()
+    f.close()
+    f = open(file, "w")
+    counter = 0
+    for line in lines:
+        counter = counter + 1
+        if counter not in line_number:
+            f.write(line)
+    f.close()
 
 
 def move_file(file_directory, filename, dest_directory, dest_filename):

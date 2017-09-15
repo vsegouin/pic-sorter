@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 # Return true if Hash code is not blank and it's not present in database.txt
 
 import logging
@@ -12,34 +12,36 @@ from utils.parameters import PATHS, Parameters
 logger = logging.getLogger(__name__)
 
 
-def check_duplication(file_path, add_hash = True):
+def check_duplication(file_path, add_hash=True):
     # Get hash files
     logger.debug('file : ' + file_path)
-    is_present = True
-    duplicate_file_path = None
     # We check each hash
+    line_found_set = {}
+    duplicate_file_path_set = {}
+    hash_set = {}
     for hash_mode in Parameters.hash_modes:
         file_hash = Hasher.hash_file(hash_mode, file_path)
-        hash_present, line_found, duplicate_file_path = is_file_already_present(hash_mode, file_hash)
+        hash_present, line_found_list, duplicate_file_path_list = is_file_already_present(hash_mode, file_hash)
         # If file is found and auth to write in database
-        if not hash_present and add_hash:
+        if add_hash:
             write_in_file(PATHS.hash_databases.get(hash_mode), file_hash + '|' + file_path)
-        is_present = is_present and hash_present
+        if hash_present:
+            line_found_set.update({hash_mode: line_found_list})
+            duplicate_file_path_set.update({hash_mode: duplicate_file_path_list})
+            hash_set.update({hash_mode: file_hash})
 
-
-    if is_present:
-        return True, duplicate_file_path
-    else:
-        return False, file_path
+    return len(line_found_set) == len(Parameters.hash_modes), hash_set, line_found_set, duplicate_file_path_set
 
 
 def is_file_already_present(type, hash):
+    num_list = []
+    num_str_list = []
     with open(PATHS.hash_databases.get(type), 'r', -1, sys.stdout.encoding) as myFile:
         for num, line in enumerate(myFile, 1):
             if hash in line:
-                logger.debug(type + ' ' + hash + ' found at line:' + repr(num) + ' duplicate file is : ' + line.split('|')[1])
-                return True, num, line.split('|')[1]
-    return False, None, None
+                num_list.append(num)
+                num_str_list.append(line.split('|')[1])
+    return len(num_list) >= 1, num_list, num_str_list
 
 
 '''

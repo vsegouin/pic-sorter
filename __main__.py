@@ -8,7 +8,7 @@ from services.detection import duplication_service
 from services.detection.duplication_service import check_duplication
 from services.sorting.sorting_factory import manage_file
 from utils.constants import MODE
-from utils.files.file_writer import write_in_file
+from utils.files.file_writer import write_in_file, remove_line_from_file, delete_files_if_exists
 from utils.hash import Hasher
 from utils.parameters import Parameters, show_parameters, PATHS
 from utils.reporting import Reporting
@@ -43,19 +43,22 @@ elif Parameters.application_mode == MODE.DEDUP:
 
     logger.info('First file iteration done')
     for i in range(1, len(PATHS.dedup_path)):
-        write_in_file('dup', '----- Deduping : ' + PATHS.dedup_path[i] + ' ---------')
-        write_in_file('unique_files', '----- Deduping : ' + PATHS.dedup_path[i] + ' ---------')
+        write_in_file(PATHS.duplicate_file_path, '----- Deduping : ' + PATHS.dedup_path[i] + ' ---------')
+        write_in_file(PATHS.unique_file_path, '----- Deduping : ' + PATHS.dedup_path[i] + ' ---------')
         for root, subdirs, files in file_crawler.crawl_folders(PATHS.dedup_path[i]):
             for file in files:
                 file_path = os.path.join(root, file)
-                exists, dup_file_path = check_duplication(file_path, True)
+                exists, hash_set, line_found_set, duplicate_file_path_set = check_duplication(file_path, False)
                 if exists:
                     Reporting.duplicate_found += 1
-                    write_in_file('dup', repr(file_path + ' = ' + dup_file_path).replace("\r\n", ""))
-                    logger.info('file exists')
+                    for hash_mode in duplicate_file_path_set:
+                        for dup_file_path in duplicate_file_path_set.get(hash_mode):
+                            if Parameters.can_remove:
+                                delete_files_if_exists(duplicate_file_path_set.get(hash_mode))
+                                print(hash_set.get(hash_mode))
+                                remove_line_from_file(PATHS.hash_databases.get(hash_mode), line_found_set.get(hash_mode))
                 else:
-                    logger.info('file doesnt exists')
-                    write_in_file('unique_files', dup_file_path)
+                    write_in_file(PATHS.unique_file_path, file_path)
 
                     # file_watcher.start_thread()
 

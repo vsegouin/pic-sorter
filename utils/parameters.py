@@ -78,21 +78,22 @@ class Parameters:
         Parameters.reset_database = args.reset_database
         Parameters.application_mode = Parameters.get_application_mode(args)
         Parameters.can_remove = args.remove
-        print('MODE : ' + Parameters.application_mode)
         for hash in args.hash_modes:
             Parameters.hash_modes.append(hash)
-        print(Parameters.hash_modes)
         if Parameters.is_verbose:
             Parameters.log_level = logging.DEBUG
 
 
 class PATHS:
-    report_file_path = ""
-    hash_databases = {}
-    sha1_database_path = None
     root_path = None
     dedup_path = None
-    md5_database_path = ""
+
+    report_file_path = ""
+    unique_file_path = ""
+    duplicate_file_path = ""
+
+    hash_databases = {}
+
     duplicate_folder = ""
     processed_folder = ""
 
@@ -100,14 +101,14 @@ class PATHS:
     def load_paths(args):
         PATHS.root_path = args.root_path
         PATHS.dedup_path = args.dedup
-        print(PATHS.dedup_path)
         base_path = PATHS.fetch_base_path(args)
         PATHS.duplicate_folder = os.path.join(base_path, "duplicate")
         PATHS.processed_folder = os.path.join(base_path, "processed")
-        PATHS.report_file_path = os.path.join(base_path,'reporting.txt')
+        PATHS.report_file_path = os.path.join(base_path, 'reporting.txt')
+        PATHS.unique_file_path = os.path.join(base_path, 'unique_file_list.txt')
+        PATHS.duplicate_file_path = os.path.join(base_path, 'duplicate_list.txt')
         for hash in Parameters.hash_modes:
             PATHS.hash_databases.update({hash: os.path.join(base_path, 'database.' + hash + '.txt')})
-        print(PATHS.hash_databases)
 
     @staticmethod
     def fetch_base_path(args):
@@ -126,4 +127,3 @@ def show_parameters():
         logger.info(i + ' : ' + repr(getattr(PATHS, i)))
     for a in Parameters_attr:
         logger.info(a + ' : ' + repr(getattr(Parameters, a)))
-

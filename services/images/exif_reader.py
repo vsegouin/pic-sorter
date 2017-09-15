@@ -25,9 +25,8 @@ def _get_if_exist(data, key):
 
 def dump_exif_data(exif_data):
     exif_object = []
-    print(exif_data)
     for tag in exif_data:
-        print({tag: exif_data[tag]})
+        logger.info({tag: exif_data[tag]})
 
 
 def _convert_to_degress(value):
