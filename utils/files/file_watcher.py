@@ -30,4 +30,4 @@ def start_thread():
     try:
         _thread.start_new_thread(start_watchdog, (PATHS.root_path,))
     except AssertionError as e:
-        print(e)
+        logging.getLogger(__name__).error(e)

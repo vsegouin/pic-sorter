@@ -1,11 +1,12 @@
 # coding=utf-8
-import json
 
 
 class MODE:
     SORTER = "SORTER"
     DEDUP = "DEDUP"
 
+
+# noinspection SpellCheckingInspection
 class MIMES_TYPES:
     NODE_MODULES = "node_modules"
     IDEA = "idea_file"

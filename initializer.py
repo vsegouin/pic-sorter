@@ -13,7 +13,6 @@ def initialize():
         mode = "w"
     else:
         mode = "a"
-
     for hash_mode in Parameters.hash_modes:
         init_file(PATHS.hash_databases.get(hash_mode), mode)
 
@@ -28,7 +27,7 @@ def init_file(file_path, mode):
 
 
 def init_logger():
-    log_format = '%(asctime)s - %(name)s - %(message)s'
+    log_format = '%(asctime)s -p%(process)s %(module)s:%(lineno)d- %(message)s'
     log_level = logging.INFO
     if Parameters.is_verbose:
         log_level = logging.DEBUG

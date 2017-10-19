@@ -1,8 +1,7 @@
+import argparse
 import logging
-import platform, argparse
 import os
-
-from watchdog.utils.bricks import OrderedSet
+import platform
 
 from utils.constants import MODE
 
@@ -78,8 +77,8 @@ class Parameters:
         Parameters.reset_database = args.reset_database
         Parameters.application_mode = Parameters.get_application_mode(args)
         Parameters.can_remove = args.remove
-        for hash in args.hash_modes:
-            Parameters.hash_modes.append(hash)
+        for hash_mode in args.hash_modes:
+            Parameters.hash_modes.append(hash_mode)
         if Parameters.is_verbose:
             Parameters.log_level = logging.DEBUG
 
@@ -107,8 +106,9 @@ class PATHS:
         PATHS.report_file_path = os.path.join(base_path, 'reporting.txt')
         PATHS.unique_file_path = os.path.join(base_path, 'unique_file_list.txt')
         PATHS.duplicate_file_path = os.path.join(base_path, 'duplicate_list.txt')
-        for hash in Parameters.hash_modes:
-            PATHS.hash_databases.update({hash: os.path.join(base_path, 'database.' + hash + '.txt')})
+        for hash_mode in Parameters.hash_modes:
+            PATHS.hash_databases.update({hash_mode: os.path.join(base_path, 'database.' + hash_mode + '.txt')})
+        print("Value : %s" % PATHS.hash_databases)
 
     @staticmethod
     def fetch_base_path(args):
@@ -119,11 +119,11 @@ class PATHS:
 
 
 def show_parameters():
-    PATHS_attr = [attr for attr in dir(PATHS) if not callable(getattr(PATHS, attr)) and not attr.startswith("__")]
-    Parameters_attr = [attr for attr in dir(Parameters) if
+    paths_attr = [attr for attr in dir(PATHS) if not callable(getattr(PATHS, attr)) and not attr.startswith("__")]
+    parameters_attr = [attr for attr in dir(Parameters) if
                        not callable(getattr(Parameters, attr)) and not attr.startswith("__")]
     logger = logging.getLogger(__name__)
-    for i in PATHS_attr:
+    for i in paths_attr:
         logger.info(i + ' : ' + repr(getattr(PATHS, i)))
-    for a in Parameters_attr:
+    for a in parameters_attr:
         logger.info(a + ' : ' + repr(getattr(Parameters, a)))

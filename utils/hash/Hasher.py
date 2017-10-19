@@ -1,13 +1,14 @@
-import hashlib
 import errno
+import hashlib
 import logging
+
 logger = logging.getLogger(__name__)
 
 
-def hash_file(type,file):
-    hash_md5 =''
-    if 'sha1' == type:
-        hash_md5 = hashlib.sha1()
+def hash_file(file_type, file):
+    if hasattr(hashlib, file_type):
+        method_to_call = getattr(hashlib, file_type)
+        hash_md5 = method_to_call()
     else:
         hash_md5 = hashlib.md5()
     try:

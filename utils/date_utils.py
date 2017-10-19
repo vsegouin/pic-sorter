@@ -3,8 +3,6 @@ import os
 import re
 import time
 
-from utils.reporting import Reporting
-
 logger = logging.getLogger(__name__)
 
 years_four = '(19[0-9]{2}|20[0-9]{2})'
@@ -51,14 +49,12 @@ def detect_file_date_from_filename(file_path):
     """
     if the exif doesn't contains the date of creation, this method try to detect the date of the file based on the name
     if the filename doesn't match any pattern it use the system date of creation
-    :param directory: directory of the file
-    :param filename: the current name of the file
-    :param root_folder: the directory where the file will end up
+    :param file_path: path of the file
     :return: the final name of the file and the new directory
     """
     for pattern in possible_pattern:
         matches = re.match(".*" + pattern.get('pattern') + ".*", file_path)
-        if (matches != None):
+        if matches is not None:
             index = 0
             date = {}
             for element in matches.groups():

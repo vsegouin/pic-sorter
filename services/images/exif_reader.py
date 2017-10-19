@@ -1,7 +1,7 @@
 # coding=utf-8
-import exifread
 import logging
-from PIL.ExifTags import TAGS, GPSTAGS
+
+import exifread
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,6 @@ def _get_if_exist(data, key):
 
 
 def dump_exif_data(exif_data):
-    exif_object = []
     for tag in exif_data:
         logger.info({tag: exif_data[tag]})
 
@@ -68,8 +67,6 @@ def get_exif_location(exif_data):
 
 
 def get_exif_dimensions(exif_data):
-    # x_resolution = _get_if_exist(exif_data, 'Image XResolution')
-    # y_resolution = _get_if_exist(exif_data, 'Image YResolution')
     width = _get_if_exist(exif_data, 'EXIF ExifImageWidth')
     height = _get_if_exist(exif_data, 'EXIF ExifImageLength')
     try:
